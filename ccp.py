@@ -2,50 +2,72 @@
 # -*- coding: utf-8 -*-
 
 # One block
-s1 = s.find('Device ID')
-s2 = s.find('Device ID', s1+1)
-t1 = s[s1:s2]
 
-# Device ID
-s1 = t1.find('Device ID: ')
-s2 = t1.find('\n', s1)
-device_name = t1[s1+len('Device ID: '):s2]
-s1 = s2
 
-# IP Address
-s1 = t1.find('IP address: ', s1)
-s2 = t1.find('\n', s1)
-ip_address = t1[s1+len('IP address: '):s2]
-s1 = s2
 
-# Local Interface
-s1 = t1.find('Interface: ', s1)
-s2 = t1.find(',', s1)
-local_int = t1[s1+len('Interface: '):s2]
-s1 = s2
+class CDPNeighbor(object, log_file):
 
-# Remote Interface
-s1 = t1.find('Port ID (outgoing port): ', s1)
-s2 = t1.find(',', s1)
-local_int = t1[s1+len('Port ID (outgoing port): '):s2]
-s1 = s2
+  def __init__(self, device_id, ip_address, local_int, remote_int):
+    self.device_id = device_id
+    self.ip_address = ip_address
+    self.local_int = local_int
+    self.remote_int = remote_int
+  
+  def getCDP(file_name):
+    PATTERN = 'Device ID: '
+    neighbors = []
+    a = 0
+    z = 0
+    with open(file_name) as fp:
+      s = ''.join(fp.readlines())
+    while True:
+      a = s.find(PATTERN, a)
+      if a == -1:
+        break
+      z = s.find(PATTERN, a+1)
+      neighbors.append(s[a:z])
+      a = z
+    return neighbors
 
-class CDPNeighbor(object):
-	
-	def __init__(self, device_id, ip_address, local_int, remote_int):
-		self.device_id = device_id
-		self.ip_address = ip_address
-		self.local_int = local_int
-		self.remote_int = remote_int
+  def getDeviceID(cdp_neighbor):
+    PATTERN = 'Device ID: '
+    a = 0
+    z = 0
+    a = cdp_neighbor.find(PATTERN, a)
+    z = cdp_neighbor.find('\n', a)
+    return cdp_neighbor[a+len(PATTERN):z].strip()
+
+  def getIPAddres(cdp_neighbor):
+    PATTERN = 'IP address: '
+    a = 0
+    z = 0
+    a = cdp_neighbor.find(PATTERN, a)
+    z = cdp_neighbor.find('\n', a)
+    return cdp_neighbor[a+len(PATTERN):z].strip()
+  
+  
+  def getLocalInterface(cdp_neighbor):
+    PATTERN = 'Interface: '
+    a = 0
+    z = 0
+    a = cdp_neighbor.find(PATTERN, a)
+    z = cdp_neighbor.find(',', a)
+    return cdp_neighbor[a+len(PATTERN):z].strip()
+
+  def getRemoteInterface(cdp_neighbor):
+    PATTERN = 'Port ID (outgoing port): '
+    a = 0
+    z = 0
+    a = cdp_neighbor.find(PATTERN, a)
+    z = cdp_neighbor.find('\n', a)
+    return cdp_neighbor[a+len(PATTERN):z].strip()
+
 
 n1 = CDPNeighbor('sw1', '20.1.2.3', 'Eth0', 'Eth5')
-
-
-Port ID (outgoing port): 
 def main():
-	
-	return 0
+
+    return 0
 
 if __name__ == '__main__':
-	main()
+    main()
 
